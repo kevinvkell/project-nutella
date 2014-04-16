@@ -15,6 +15,11 @@
 #include <signal.h>
 #include <sys/time.h>
 #include "server.h"
+#include "msock.h"
+
+#define MULTICAST_ADDR "239.0.0.1"
+#define MULTICAST_PORT 10000
+#define PLAYER_PORT 10001
 
 int player();
 int watch_movie();
@@ -42,19 +47,33 @@ int main(int argc, char* argv[]){
 }
 
 int player() {
-	int status;
-	struct addrinfo *results;
-	struct addrinfo hints;
+//	struct addrinfo *results;
+//	struct addrinfo hints;
 	char message[512];
 	char input[512];
-	char buffer[10000];
-	char server_port[] = "9000";
-	char server_ip[] = "255.1.1.1";
-	int socket_descriptor;
-	int bytes;
+//	char buffer[10000];
+//	int socket_descriptor;
+//	int bytes;
 
-	fgets(input, sizeof input, stdin);
+	int sock;
 
+	while(1){
+		fgets(input, sizeof input, stdin);
+
+		if ((sock = msockcreate(SEND, MULTICAST_ADDR, MULTICAST_PORT)) < 0) {
+			perror("msockcreate");
+			exit(1);
+		}
+
+		sprintf(message, "%d\t%s\t%d\t", REQUEST_KVK, input, PLAYER_PORT); 
+
+		if(msend(sock, message, strlen(message) + 1) < 0){
+			perror("msend");
+			exit(1);
+		}
+	}
+	return 0;
+/*
 //clear the hints struct
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = AF_UNSPEC;
@@ -62,7 +81,7 @@ int player() {
 	hints.ai_flags = AI_PASSIVE;
 
 //fill in the results struct using the hints
-	if((status = getaddrinfo(server_ip, server_port, &hints, &results)) != 0){
+	if(getaddrinfo(server_ip, server_port, &hints, &results) != 0){
 		perror("getaddrinfo");
 		exit(1);
 	}
@@ -108,6 +127,7 @@ int player() {
 		freeaddrinfo(results);
 		return 0;
 	}
+*/
 }
 
 int request_accepted(char *response){

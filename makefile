@@ -3,8 +3,8 @@
 
 all: player
 
-player: player.c server.c
-	gcc -Wall -g server.c player.c -o player -I .
+player: player.c server.c msock.c
+	gcc -Wall -g msock.c server.c player.c -o player -I .
 
 clean:
 	rm player 
