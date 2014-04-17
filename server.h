@@ -4,6 +4,6 @@
 #define REQUEST_KVK 0
 #define RESPONSE_KVK 1
 
-int server();
+int server(int id);
 
 #endif

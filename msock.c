@@ -56,6 +56,12 @@ int msockcreate(int type, char *address, int port) {
       perror("setsockopt mreq");
       return ret;
     }         
+
+    char loop = 0;
+    if ((ret=setsockopt(sock, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(char))) < 0) {
+		perror("setsockopt loop");
+		return ret;
+    }
     
     if ((ret=setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, 
                    &on, sizeof(on))) < 0) {
